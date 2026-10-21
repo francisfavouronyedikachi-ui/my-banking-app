@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyBank Dashboard</title>
+<style>
+:root {
+  --wine: #42182d;
+  --ink: #241329;
+  --muted: #858092;
+  --green: #16804c;
+  --pink: #f9edef;
+  --paper: #faf8f6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 26px 22px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+h1 { font-size: 27px; margin: 5px 0; }
+.muted { color: var(--muted); }
+.avatar {
+  background: #ead8e0;
+  border-radius: 50%;
+  padding: 13px;
+  font-size: 22px;
+}
+.demo {
+  margin: 0 18px 22px;
+  padding: 10px;
+  border-radius: 9px;
+  text-align: center;
+  background: #fff0cf;
+  color: #754b00;
+  font-size: 12px;
+}
+.balance {
+  margin: 0 18px 22px;
+  padding: 26px 22px;
+  color: white;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #351126, #702b49);
+  box-shadow: 0 12px 25px #42182d20;
+}
+.balance small { color: #eadde5; }
+.amount {
+  font-size: clamp(30px, 8vw, 42px);
+  font-weight: 700;
+  margin: 15px 0 25px;
+  overflow-wrap: anywhere;
+}
+.actions { display: flex; gap: 10px; }
+button {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.actions button { flex: 1; }
+.primary { background: white; color: var(--wine); }
+.secondary { background: #ffffff20; color: white; }
+.shortcuts {
+  margin: 0 18px 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+.shortcut { font-size: 12px; }
+.shortcut button {
+  display: block;
+  width: 100%;
+  background: white;
+  color: var(--wine);
+  font-size: 24px;
+  padding: 17px 0;
+  margin-bottom: 9px;
+  border-radius: 18px;
+}
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 22px 15px;
+}
+.section-title h2 { font-size: 21px; }
+#transactions {
+  margin: 0 18px 100px;
+  padding: 0 15px;
+  background: white;
+  border-radius: 20px;
+}
+.transaction {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid #f0edf0;
+}
+.transaction:last-child { border-bottom: 0; }
+.tx-icon {
+  background: var(--pink);
+  padding: 12px;
+  border-radius: 50%;
+}
+.tx-info { flex: 1; min-width: 0; }
+.tx-info strong { font-size: 14px; }
+.tx-info small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 11px;
+}
+.tx-value { text-align: right; font-size: 13px; font-weight: bold; }
+.income { color: var(--green); }
+nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 4px 18px;
+  background: #ffffffef;
+  border-top: 1px solid #eee8ed;
+}
+nav button {
+  background: transparent;
+  color: var(--muted);
+  padding: 8px;
+  font-size: 12px;
+}
+nav button.active { color: var(--wine); background: var(--pink); }
+dialog {
+  border: 0;
+  border-radius: 20px;
+  padding: 24px;
+  width: calc(100% - 36px);
+  max-width: 400px;
+  color: var(--ink);
+}
+dialog::backdrop { background: #180d18a8; }
+dialog h2 { margin-top: 0; }
+input {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0 16px;
+  border: 1px solid #ddd3dc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.submit { background: var(--wine); color: white; width: 100%; }
+.cancel { background: #f1edf0; color: var(--ink); width: 100%; margin-top: 8px; }
+footer { text-align: center; color: var(--muted); font-size: 11px; padding: 0 20px 100px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="muted">Welcome back,</div>
+    <h1>Chinonso 👋</h1>
+  </div>
+  <div class="avatar">●</div>
+</header>
+
+<div class="demo">DEMO APP · Sample balance only · No real money</div>
+
+<section class="balance">
+  <small>Available demo balance</small>
+  <div class="amount" id="balance">$2,450.80</div>
+  <div class="actions">
+    <button class="primary" onclick="openDialog('sendDialog')">➤ Send money</button>
+    <button class="secondary" onclick="openDialog('addDialog')">＋ Add money</button>
+  </div>
+</section>
+
+<section class="shortcuts">
+  <div class="shortcut">
+    <button onclick="showMessage('Analytics will be added next.')">▥</button>
+    Analytics
+  </div>
+  <div class="shortcut">
+    <button onclick="showMessage('Your demo transaction history is below.')">▤</button>
+    History
+  </div>
+  <div class="shortcut">
+    <button onclick="showMessage('Demo card feature coming soon.')">▣</button>
+    Cards
+  </div>
+  <div class="shortcut">
+    <button onclick="showMessage('Support feature coming soon.')">☏</button>
+    Support
+  </div>
+</section>
+
+<div class="section-title">
+  <h2>Recent activity</h2>
+  <button onclick="showMessage('These are sample transactions only.')"
+    style="background:transparent;color:var(--wine)">See all ›</button>
+</div>
+
+<section id="transactions">
+  <div class="transaction">
+    <div class="tx-icon">↓</div>
+    <div class="tx-info">
+      <strong>Sample deposit</strong>
+      <small>Today · Demo transaction</small>
+    </div>
+    <div class="tx-value income">+$2,400.00</div>
+  </div>
+  <div class="transaction">
+    <div class="tx-icon">🛒</div>
+    <div class="tx-info">
+      <strong>Grocery store</strong>
+      <small>Yesterday · Sample</small>
+    </div>
+    <div class="tx-value">-$54.20</div>
+  </div>
+  <div class="transaction">
+    <div class="tx-icon">↙</div>
+    <div class="tx-info">
+      <strong>Transfer received</strong>
+      <small>Sample transaction</small>
+    </div>
+    <div class="tx-value income">+$125.00</div>
+  </div>
+  <div class="transaction">
+    <div class="tx-icon">▣</div>
+    <div class="tx-info">
+      <strong>Online purchase</strong>
+      <small>Sample transaction</small>
+    </div>
+    <div class="tx-value">-$32.80</div>
+  </div>
+</section>
+
+<footer>MyBank demo · Balances and activity are illustrative, not actual funds.</footer>
+
+<nav>
+  <button class="active" onclick="showMessage('You are on Home.')">⌂<br>Home</button>
+  <button onclick="showMessage('Payments demo.')">⇄<br>Payments</button>
+  <button onclick="showMessage('Cards demo.')">▣<br>Cards</button>
+  <button onclick="showMessage('Profile setup coming soon.')">♙<br>Profile</button>
+</nav>
+
+<dialog id="sendDialog">
+  <h2>Send demo money</h2>
+  <p class="muted">This only changes the sample balance on this page. No payment will be sent.</p>
+  <form onsubmit="sendDemo(event)">
+    <label>Recipient name</label>
+    <input id="recipient" required maxlength="50" placeholder="Enter a demo name">
+    <label>Amount ($)</label>
+    <input id="sendAmount" type="number" min="0.01" max="100000" step="0.01" required placeholder="0.00">
+    <button class="submit" type="submit">Confirm demo transfer</button>
+    <button class="cancel" type="button" onclick="closeDialog('sendDialog')">Cancel</button>
+  </form>
+</dialog>
+
+<dialog id="addDialog">
+  <h2>Add demo money</h2>
+  <p class="muted">This simulates a deposit. It does not charge a card or add real funds.</p>
+  <form onsubmit="addDemo(event)">
+    <label>Amount ($)</label>
+    <input id="addAmount" type="number" min="0.01" max="100000" step="0.01" required placeholder="0.00">
+    <button class="submit" type="submit">Add sample balance</button>
+    <button class="cancel" type="button" onclick="closeDialog('addDialog')">Cancel</button>
+  </form>
+</dialog>
+
+<script>
+let demoBalance = 2450.80;
+
+function renderBalance() {
+  document.getElementById('balance').textContent =
+    '$' + demoBalance.toLocaleString('en-US', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
+}
+function openDialog(id) {
+  document.getElementById(id).showModal();
+}
+function closeDialog(id) {
+  document.getElementById(id).close();
+}
+function showMessage(message) {
+  alert(message);
+}
+function addDemo(event) {
+  event.preventDefault();
+  const amount = Number(document.getElementById('addAmount').value);
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 100000) {
+    alert('Enter a valid demo amount.');
+    return;
+  }
+  demoBalance += amount;
+  renderBalance();
+  closeDialog('addDialog');
+  event.target.reset();
+  alert('Demo deposit added. No real money was moved.');
+}
+function sendDemo(event) {
+  event.preventDefault();
+  const recipient = document.getElementById('recipient').value.trim();
+  const amount = Number(document.getElementById('sendAmount').value);
+  if (!recipient || !Number.isFinite(amount) || amount <= 0 || amount > demoBalance) {
+    alert('Enter a recipient and a valid amount within the demo balance.');
+    return;
+  }
+  if (!confirm('Simulate sending $' + amount.toFixed(2) + ' to ' + recipient + '? No real transfer will occur.')) return;
+  demoBalance -= amount;
+  renderBalance();
+  closeDialog('sendDialog');
+  event.target.reset();
+  alert('Demo transfer complete. No real money was sent.');
+}
+</script>
+</body>
+  </html>
+  
